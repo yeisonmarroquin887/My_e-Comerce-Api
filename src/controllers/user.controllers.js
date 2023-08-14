@@ -20,11 +20,11 @@ const create = catchError(async(req, res) => {
 });
 
 const getOne = catchError(async(req, res) => {
-    const {id} = req.params;
-    const result = User.findByPk(id, {include:[Administrator,Purchase]})
+    const { id } = req.params;
+    const result = await User.findByPk(id);
     if(!result) return res.sendStatus(404);
     return res.json(result);
-})
+});
 
 const remove = catchError(async(req, res) => {
     const { id } = req.params;

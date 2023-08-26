@@ -4,12 +4,17 @@ const User = require('../models/User');
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
 const Purchase = require('../models/Purchase');
+const Product = require('../models/Product');
+const ProductImg = require('../models/ProductImg');
 
 const getAll = catchError(async(req, res) => {
     const results = await Administrator.findAll({
-        include:[{
+        include: [{
             model: User,
-            include: Purchase
+            include: {
+                model: Purchase,
+                include: Product
+            }
         }]
     });
     return res.json(results);

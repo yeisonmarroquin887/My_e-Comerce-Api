@@ -6,12 +6,17 @@ const Administrator = require('../models/Administrator');
 const Purchase = require('../models/Purchase');
 const EmailCode = require('../models/EmailCode');
 const sendEmail = require('../utils/sendEmail');
+const Product = require('../models/Product');
+const ProductImg = require('../models/ProductImg');
 
 const getAll = catchError(async(req, res) => {
     const results = await User.findAll({
-        include:[Administrator, {
+        include:[{
             model: Purchase,
-            include: product
+            include:{
+                model:Product,
+                include:ProductImg
+            }
         }]
     });
     return res.json(results);

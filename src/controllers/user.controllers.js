@@ -11,7 +11,7 @@ const getAll = catchError(async(req, res) => {
     const results = await User.findAll({
         include:[Administrator, {
             model: Purchase,
-            include: [product]
+            include: product
         }]
     });
     return res.json(results);

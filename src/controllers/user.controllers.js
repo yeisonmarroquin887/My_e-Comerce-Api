@@ -9,7 +9,10 @@ const sendEmail = require('../utils/sendEmail');
 
 const getAll = catchError(async(req, res) => {
     const results = await User.findAll({
-        include:[Administrator, Purchase]
+        include:[Administrator, {
+            model: Purchase,
+            include: [product]
+        }]
     });
     return res.json(results);
 });

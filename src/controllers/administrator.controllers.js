@@ -28,9 +28,12 @@ const create = catchError(async(req, res) => {
 const getOne = catchError(async(req, res) => {
     const { id } = req.params;
     const result = await Administrator.findByPk(id, {
-        include:[{
+        include: [{
             model: User,
-            include: Purchase
+            include: {
+                model: Purchase,
+                include: Product
+            }
         }]
     });
     if(!result) return res.sendStatus(404);

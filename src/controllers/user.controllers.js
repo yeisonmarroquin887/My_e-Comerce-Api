@@ -21,10 +21,36 @@ const getAll = catchError(async(req, res) => {
     });
     return res.json(results);
 });
+const getAdminList = catchError(async (req, res) => {
+    const admins = await Administrator.findAll(); // Suponiendo que hay un modelo 'Administrator'
+    return res.json(admins);
+  });
+  
 
 const create = catchError(async(req, res) => {
-    const result = await User.create(req.body);
-    return res.status(201).json(result);
+    const { adminId, ...userData } = req.body;
+
+    try {
+      // Aquí deberías incluir la lógica para verificar si el adminId es válido
+      // y si es necesario realizar algún proceso específico relacionado con el administrador.
+  
+      const user = await User.create(userData);
+  
+      if (adminId) {
+        // Asociar al usuario con el administrador si se proporcionó un adminId válido
+        const admin = await Administrator.findByPk(adminId);
+        if (!admin) {
+          return res.status(404).json({ message: 'Administrador no encontrado' });
+        }
+  
+        // Suponiendo que tienes una relación en el modelo User para asociar con el administrador
+        await user.setAdministrator(admin);
+      }
+  
+      return res.status(201).json(user);
+    } catch (error) {
+      return res.status(500).json({ message: 'Error al crear el usuario', error });
+    }
 });
 
 const getOne = catchError(async(req, res) => {
@@ -145,5 +171,6 @@ module.exports = {
     verifyCode,
     logged,
     resetPassword,
-    updatePassword
+    updatePassword, 
+    getAdminList
 }

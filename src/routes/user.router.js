@@ -15,6 +15,8 @@ routerUser.route('/')
 
 routerUser.route('/reset_password')
     .post(resetPassword)
+    routerUser.route('/admins')
+    .get(getAdminList);
 
 routerUser.route('/:id')
     .get(verifyCode,getOne)
@@ -26,7 +28,5 @@ routerUser.route('/verify/:code')
 
 routerUser.route('/reset_password/:code') 
     .post(updatePassword)
-routerUser.route('/admins')
-    .get(getAdminList);
 
 module.exports = routerUser;

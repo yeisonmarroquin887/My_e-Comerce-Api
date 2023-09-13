@@ -7,17 +7,8 @@ const multer = require('multer');
 const upload = multer({ dest: 'temp/' });
 
 const getAll = catchError(async (req, res) => {
-    const { productId } = req.params;
-
-    const product = await Product.findByPk(productId, {
-        include: ProductImg,
-    });
-
-    if (!product) {
-        return res.status(404).json({ message: 'Producto no encontrado' });
-    }
-
-    return res.json(product.ProductImgs);
+  const img = await ProductImg.findAll()
+  return res.json(img)
 });
 
 const create = catchError(async (req, res) => {

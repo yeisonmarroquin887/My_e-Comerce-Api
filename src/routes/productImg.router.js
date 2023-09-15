@@ -8,7 +8,7 @@ const routerProductImg = express.Router();
 routerProductImg.route('/')
     .get(verifyJWT, getAll);
 
-routerProductImg.route('/product/:productId')
+routerProductImg.route('/product/:id')
     .post(verifyJWT, multer.array('images'), create);
 
 routerProductImg.route('/:id')

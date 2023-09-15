@@ -1,39 +1,39 @@
 const catchError = require('../utils/catchError');
-const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
+const { deleteFromCloudinary } = require('../utils/cloudinary');
 const ProductImg = require('../models/ProductImg');
-const Product = require('../models/Product');
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const Product = require('../models/Product');
 
-const upload = multer({ dest: 'temp/' });
 
 const getAll = catchError(async (req, res) => {
   const img = await ProductImg.findAll();
   return res.json(img);
 });
-
-const create = catchError(async (req, res) => {
+const create = catchError(async(req, res) => {
+  const { id } = req.params;
   const images = req.files.map(file => {
       const url = req.protocol + "://" + req.headers.host + "/uploads/" + file.filename;
       const filename = file.filename;
       return { url, filename };
   });
 
-  const result = await ProductImg.bulkCreate(images);
+  // Crear las imágenes en la base de datos y obtener sus IDs
+  const createdImages = await ProductImg.bulkCreate(images);
+  const imageIds = createdImages.map(image => image.id); // Suponiendo que el campo de ID en ProductImg se llama 'id'
 
-  // Aquí configuramos el seteo de imágenes para el producto
-  const { id } = req.params;
   const product = await Product.findByPk(id);
 
   if (!product) {
       return res.status(404).json({ error: "Producto no encontrado" });
   }
 
-  await product.setProductImgs(images);
+  // Asociar los IDs de las imágenes al producto
+  await product.setProductImgs(imageIds);
 
-  return res.status(201).json(result);
+  return res.status(201).json(createdImages);
 });
+
 
 
 const remove = catchError(async (req, res) => {

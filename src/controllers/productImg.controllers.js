@@ -27,7 +27,6 @@ const create = catchError(async (req, res) => {
   for (const imageFile of images) {
     const { path, filename } = imageFile;
     
-    // Verificamos que el archivo local exista
     if (fs.existsSync(path)) {
       const { url, public_id } = await uploadToCloudinary(path, filename);
       const body = { url, filename: public_id };

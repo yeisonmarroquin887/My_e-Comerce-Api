@@ -10,15 +10,11 @@ const storage = multer.diskStorage({
     },
 });
 
-module.exports = (fieldName) => {
-    return multer({
-        storage: storage,
-        fileFilter: (req, file, cb) => {
-            if (file.fieldname === fieldName) {
-                cb(null, true);
-            } else {
-                cb(new Error('Unexpected field'));
-            }
-        },
-    });
-};
+// Exporta una instancia de Multer configurada
+module.exports = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        // Aquí puedes agregar tu lógica de filtrado de archivos si es necesario
+        cb(null, true);
+    },
+});

@@ -13,32 +13,14 @@ const getAll = catchError(async (req, res) => {
   return res.json(img);
 });
 
-const create = catchError(upload.array('nombreDelCampo'), async (req, res) => {
-  const images = req.files;
-  const uploadedImages = [];
-  const { productId } = req.params;
-  const product = await Product.findByPk(productId);
-
-  if (!product) {
-    return res.status(404).json({ message: 'Producto no encontrado' });
-  }
-
-  for (const imageFile of images) {
-    const { path, filename } = imageFile;
-
-    if (fs.existsSync(path)) {
-      const { url, public_id } = await uploadToCloudinary(path, filename);
-      const body = { url, filename: public_id };
-
-      const image = await ProductImg.create(body);
-      await image.setProduct(product);
-      uploadedImages.push(image);
-    } else {
-      console.error(`Archivo no encontrado en la ruta: ${path}`);
-    }
-  }
-
-  return res.status(201).json(uploadedImages);
+const create = catchError(async(req, res) => {
+  const images = req.files.map(file => {
+      const url = req.protocol + "://" + req.headers.host + "/uploads/" + file.filename;
+      const filename = file.filename;
+      return { url, filename };
+  })
+  const result = await ProductImg.bulkCreate(images);
+  return res.status(201).json(result);
 });
 
 

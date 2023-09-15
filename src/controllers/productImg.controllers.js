@@ -13,15 +13,28 @@ const getAll = catchError(async (req, res) => {
   return res.json(img);
 });
 
-const create = catchError(async(req, res) => {
+const create = catchError(async (req, res) => {
   const images = req.files.map(file => {
       const url = req.protocol + "://" + req.headers.host + "/uploads/" + file.filename;
       const filename = file.filename;
       return { url, filename };
-  })
+  });
+
   const result = await ProductImg.bulkCreate(images);
+
+  // Aquí configuramos el seteo de imágenes para el producto
+  const { id } = req.params;
+  const product = await Product.findByPk(id);
+
+  if (!product) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+  }
+
+  await product.setProductImgs(images);
+
   return res.status(201).json(result);
 });
+
 
 const remove = catchError(async (req, res) => {
   const { id } = req.params;

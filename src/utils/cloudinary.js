@@ -10,21 +10,31 @@ cloudinary.config({
 
 const uploadToCloudinary = async(localFilePath, filename) => {
     try {
-        
         const folder = "test";
         const filePathOnCloudinary = folder + "/" + path.parse(filename).name;
-        const result = await cloudinary.uploader.upload( 
-            localFilePath, 
-            { "public_id": filePathOnCloudinary }
-        )
-        return result;
+        
+        // Verificar que el archivo local exista antes de cargarlo en Cloudinary
+        if (fs.existsSync(localFilePath)) {
+            const result = await cloudinary.uploader.upload( 
+                localFilePath, 
+                { "public_id": filePathOnCloudinary }
+            );
+            return result;
+        } else {
+            console.error(`Archivo local no encontrado en la ruta: ${localFilePath}`);
+            return { message: "Archivo local no encontrado" };
+        }
     } catch (error) {
-        console.log(error);
-        return { message: "Upload to cloudinary failed" };
+        console.error(error);
+        return { message: "Upload to Cloudinary failed" };
     } finally {
-        fs.unlinkSync(localFilePath)
+        // Verificar nuevamente si el archivo local existe antes de intentar eliminarlo
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
     }
 }
+
 
 const deleteFromCloudinary = async(publicId) => {
     try {

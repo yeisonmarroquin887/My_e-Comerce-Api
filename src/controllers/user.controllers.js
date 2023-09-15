@@ -22,7 +22,7 @@ const getAll = catchError(async(req, res) => {
     return res.json(results);
 });
 const getAdminList = catchError(async (req, res) => {
-  const admins = await Administrator.findAll(); // Suponiendo que hay un modelo 'Administrator'
+  const admins = await Administrator.findAll(); 
   return res.json(admins);
 });
 
@@ -75,7 +75,7 @@ const login = catchError(async(req,res)=>{
     return res.json({user,token})
 
 })
-const verifyCode = catchError(async (req,res)=>{ // /verify/:code
+const verifyCode = catchError(async (req,res)=>{ 
     const {code} = req.params
 
     const codeUser = await EmailCode.findOne({where:{code}})

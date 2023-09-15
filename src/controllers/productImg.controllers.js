@@ -26,7 +26,6 @@ const create = catchError(upload.array('nombreDelCampo'), async (req, res) => {
   for (const imageFile of images) {
     const { path, filename } = imageFile;
 
-    // Verificar si el archivo existe en la ruta especificada
     if (fs.existsSync(path)) {
       const { url, public_id } = await uploadToCloudinary(path, filename);
       const body = { url, filename: public_id };
@@ -36,7 +35,6 @@ const create = catchError(upload.array('nombreDelCampo'), async (req, res) => {
       uploadedImages.push(image);
     } else {
       console.error(`Archivo no encontrado en la ruta: ${path}`);
-      // Puedes enviar una respuesta de error adecuada aquí si lo deseas
     }
   }
 
@@ -50,10 +48,8 @@ const remove = catchError(async (req, res) => {
 
   if (!image) return res.sendStatus(404);
 
-  // Eliminar de Cloudinary
   await deleteFromCloudinary(image.filename);
 
-  // Eliminar el archivo local (si es necesario)
   const localFilePath = path.join('temp', image.filename);
   if (fs.existsSync(localFilePath)) {
     fs.unlinkSync(localFilePath);

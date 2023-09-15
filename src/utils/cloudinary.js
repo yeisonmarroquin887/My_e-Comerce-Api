@@ -13,7 +13,6 @@ const uploadToCloudinary = async(localFilePath, filename) => {
         const folder = "test";
         const filePathOnCloudinary = folder + "/" + path.parse(filename).name;
         
-        // Verificar que el archivo local exista antes de cargarlo en Cloudinary
         if (fs.existsSync(localFilePath)) {
             const result = await cloudinary.uploader.upload( 
                 localFilePath, 
@@ -28,7 +27,6 @@ const uploadToCloudinary = async(localFilePath, filename) => {
         console.error(error);
         return { message: "Upload to Cloudinary failed" };
     } finally {
-        // Verificar nuevamente si el archivo local existe antes de intentar eliminarlo
         if (fs.existsSync(localFilePath)) {
             fs.unlinkSync(localFilePath);
         }

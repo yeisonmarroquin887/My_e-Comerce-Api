@@ -3,9 +3,8 @@ const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinar
 const ProductImg = require('../models/ProductImg');
 const Product = require('../models/Product');
 const multer = require('multer');
-const path = require('path'); // Agregamos la librería path
+const path = require('path');
 const fs = require('fs');
-
 
 const upload = multer({ dest: 'temp/' });
 
@@ -14,7 +13,7 @@ const getAll = catchError(async (req, res) => {
   return res.json(img);
 });
 
-const create = catchError(async (req, res) => {
+const create = catchError(upload.array('nombreDelCampo'), async (req, res) => {
   const images = req.files;
   const uploadedImages = [];
   const { productId } = req.params;
@@ -26,21 +25,24 @@ const create = catchError(async (req, res) => {
 
   for (const imageFile of images) {
     const { path, filename } = imageFile;
-    
+
+    // Verificar si el archivo existe en la ruta especificada
     if (fs.existsSync(path)) {
       const { url, public_id } = await uploadToCloudinary(path, filename);
       const body = { url, filename: public_id };
-      
+
       const image = await ProductImg.create(body);
       await image.setProduct(product);
       uploadedImages.push(image);
     } else {
       console.error(`Archivo no encontrado en la ruta: ${path}`);
+      // Puedes enviar una respuesta de error adecuada aquí si lo deseas
     }
   }
 
   return res.status(201).json(uploadedImages);
 });
+
 
 const remove = catchError(async (req, res) => {
   const { id } = req.params;
@@ -48,10 +50,10 @@ const remove = catchError(async (req, res) => {
 
   if (!image) return res.sendStatus(404);
 
-  // Eliminamos de Cloudinary
+  // Eliminar de Cloudinary
   await deleteFromCloudinary(image.filename);
 
-  // Eliminamos el archivo local (si es necesario)
+  // Eliminar el archivo local (si es necesario)
   const localFilePath = path.join('temp', image.filename);
   if (fs.existsSync(localFilePath)) {
     fs.unlinkSync(localFilePath);

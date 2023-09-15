@@ -14,13 +14,14 @@ const getAll = catchError(async (req, res) => {
 });
 
 const create = catchError(async(req, res) => {
-  const { path, filename } = req.file;
-  const { url, public_id } = await uploadToCloudinary(path, filename);
-  const body = { url, filename: public_id }
-  const image = await ProductImg.create(body);
-  return res.status(201).json(image);
+  const images = req.files.map(file => {
+      const url = req.protocol + "://" + req.headers.host + "/uploads/" + file.filename;
+      const filename = file.filename;
+      return { url, filename };
+  })
+  const result = await ProductImg.bulkCreate(images);
+  return res.status(201).json(result);
 });
-
 
 const remove = catchError(async (req, res) => {
   const { id } = req.params;

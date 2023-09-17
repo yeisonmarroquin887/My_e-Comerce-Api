@@ -26,6 +26,7 @@ const getOne = catchError(async(req, res) => {
     return res.json(result);
 });
 
+
 const remove = catchError(async(req, res) => {
     const { id } = req.params;
     await Product.destroy({ where: {id} });

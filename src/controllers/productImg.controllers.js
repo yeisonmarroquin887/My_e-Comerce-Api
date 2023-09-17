@@ -20,18 +20,7 @@ const create = catchError(async(req, res) => {
 
   // Crear las imágenes en la base de datos y obtener sus IDs
   const createdImages = await ProductImg.bulkCreate(images);
-  const imageIds = createdImages.map(image => image.id); // Suponiendo que el campo de ID en ProductImg se llama 'id'
-
-  const product = await Product.findByPk(id);
-
-  if (!product) {
-      return res.status(404).json({ error: "Producto no encontrado" });
-  }
-
-  // Asociar los IDs de las imágenes al producto
-  await product.setProductImgs(imageIds);
-
-  return res.status(201).json(createdImages);
+  return res.status(201).json(createdImages)
 });
 
 

@@ -6,9 +6,7 @@ const multer = require("../utils/multer");
 const routerProductImg = express.Router();
 
 routerProductImg.route('/')
-    .get(verifyJWT, getAll);
-
-routerProductImg.route('/product/:id')
+    .get(verifyJWT, getAll)
     .post(verifyJWT, multer.array('images'), create);
 
 routerProductImg.route('/:id')

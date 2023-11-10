@@ -10,17 +10,26 @@ const getAll = catchError(async (req, res) => {
   const img = await ProductImg.findAll();
   return res.json(img);
 });
-// función creada anteriormente en utils
+const create = catchError(async (req, res) => {
+  const { files } = req;
 
-// ...
+  if (!files || files.length !== 3) {
+      return res.status(400).json({ message: "Se requieren exactamente 3 imágenes" });
+  }
 
-const create = catchError(async(req, res) => {
-    const { path, filename } = req.file;
-    const { url, public_id } = await uploadToCloudinary(path, filename);
-    const body = { url, filename: public_id }
-    const image = await ProductImg.create(body);
-    return res.status(201).json(image);
+  const imageArray = [];
+
+  for (const file of files) {
+      const { path, filename } = file;
+      const { url, public_id } = await uploadToCloudinary(path, filename);
+      const body = { url, filename: public_id };
+      const image = await ProductImg.create(body);
+      imageArray.push(image);
+  }
+
+  return res.status(201).json(imageArray);
 });
+
 
 
 
